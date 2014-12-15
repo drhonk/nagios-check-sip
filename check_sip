@@ -43,8 +43,8 @@ $ENV{'ENV'}='';
 $ENV{'PATH'}='';
 $ENV{'LC_ALL'}='C';
 
-my ($opt_V,$opt_h,$opt_u,$opt_p,$opt_H, $opt_w, $opt_s, $opt_f);
-$opt_V = $opt_h = $opt_u = $opt_p = $opt_H = $opt_w = $opt_s = $opt_f = '';
+my ($opt_V,$opt_h,$opt_u,$opt_p,$opt_P,$opt_H, $opt_w, $opt_s, $opt_f);
+$opt_V = $opt_h = $opt_u = $opt_p = $opt_P = $opt_H = $opt_w = $opt_s = $opt_f = '';
 
 my $state = 'UNKNOWN';
 
@@ -57,6 +57,7 @@ GetOptions(
   "f=s" => \$opt_f,   "fromuri=s"     => \$opt_f,
   "u=s" => \$opt_u,   "uri=s"         => \$opt_u,
   "p=s" => \$opt_p,   "port=s"        => \$opt_p,
+  "P=s" => \$opt_P,   "Prot=s"        => \$opt_P,
   "H=s" => \$opt_H,   "host=s"        => \$opt_H,
   "w=s" => \$opt_w,   "warn=s"	      => \$opt_w
 );
@@ -75,6 +76,9 @@ unless ($opt_u) { printHelp(); exit $ERRORS{'UNKNOWN'} }
 
 # Port is 5060 unless otherwise specified
 unless ($opt_p) { $opt_p = 5060 }
+
+# Protocol is UDP unless otherwise specified
+unless ($opt_P) { $opt_P = "udp" } 
 
 # Determine the host from the sip URI if it wasn't specified with -H
 unless ($opt_H) { $opt_H = hostFromURI($opt_u) }
@@ -156,7 +160,7 @@ exit $ERRORS{$state};
 sub uconnect
 {
   my ($host, $port) = @_;
-  my $socket = new IO::Socket::INET->new(PeerPort=>$port, Proto=>'udp', PeerAddr=>$host);
+  my $socket = new IO::Socket::INET->new(PeerPort=>$port, Proto=>$udp_P, PeerAddr=>$host);
   unless ($socket) { print "Unable to connect to $host\n"; exit $ERRORS{'UNKNOWN'} }
   return $socket;
 }
@@ -243,6 +247,8 @@ sub printHelp
   print "   Host name or IP Address to connect to\n";
   print " -p port\n";
   print "   Port to connect to\n";
+  print " -P protocol\n";
+  print "   Protocol to use, (tcp or udp)\n";
   print " -f sip:fromuri\@example.com\n";
   print "   Full SIP uri, will be used for the \"From:\"-Header\n";
   print " -s\n";
