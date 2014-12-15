@@ -160,7 +160,7 @@ exit $ERRORS{$state};
 sub uconnect
 {
   my ($host, $port) = @_;
-  my $socket = new IO::Socket::INET->new(PeerPort=>$port, Proto=>$udp_P, PeerAddr=>$host);
+  my $socket = new IO::Socket::INET->new(PeerPort=>$port, Proto=>$opt_P, PeerAddr=>$host);
   unless ($socket) { print "Unable to connect to $host\n"; exit $ERRORS{'UNKNOWN'} }
   return $socket;
 }
